@@ -5,14 +5,22 @@ DirectoryIndex index.html index.php
   RewriteEngine On
   RewriteBase /
   
-  # Force HTTPS
+  # Force HTTPS (production only, comment if local)
   RewriteCond %{HTTPS} off
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   
-  # Handle React Router - send all requests to index.html
+  # Redirect root access to index.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+  RewriteCond %{REQUEST_URI} ^/$
+  RewriteRule ^(.*)$ /index.html [L]
+  
+  # For single page app - only redirect if requesting a page without extension
+  # This allows 404 errors for truly missing files
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !\.(.*)$
+  RewriteRule ^(.*)$ /index.html [L]
 </IfModule>
 
 # Compression
